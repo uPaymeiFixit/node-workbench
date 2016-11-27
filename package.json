@@ -1,0 +1,13 @@
+{
+  "name": "node-workbench",
+  "version": "0.0.2",
+  "description": "A quick prototyping environment built with node with tools for math homework.",
+  "main": "START",
+  "repository": "https://github.com/uPaymeiFixit/node-workbench.git",
+  "author": "Josh Gibbs <uPaymeiFixit@gmail.com>",
+  "license": "MIT",
+  "dependencies": {
+    "chalk": "^1.1.3",
+    "gulp": "^3.9.1"
+  }
+}
