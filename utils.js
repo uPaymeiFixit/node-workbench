@@ -53,16 +53,6 @@ randInt = (min, max) => {
 }
 
 
-blue = function(i) {
-    console.log(`\t` + chalk.blue(i));
-}
-red = function(i) {
-    console.log(`\t` + chalk.red(i));
-}
-
-
-
-
 out = {
     default     : function(i) {
         console.log(`\t${                   (i)}`)
