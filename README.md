@@ -4,7 +4,7 @@ A quick prototyping environment built with node with tools for math homework.
 ### Install
 This project is self-contained and does not need to be compiled. Place it wherever you'd like.
 To install, run the `INSTALL` file.
-Or optinally run `npm install`.
+Or optionally run `npm install`.
 
 ## Start
 Run the `START` file to open the workspace in Sublime Text and begin watching for code changes with `gulp`.
