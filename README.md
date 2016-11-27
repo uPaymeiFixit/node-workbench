@@ -6,7 +6,7 @@ This project is self-contained and does not need to be compiled. Place it wherev
 To install, run the `INSTALL` file.
 Or optinally run `npm install`.
 
-### Start
+## Start
 Run the `START` file to open the workspace in Sublime Text and begin watching for code changes with `gulp`.
 Optionally you can open workspace.js in whichever editor you'd like and watch / run it by running `gulp`
 from the `node-workbench` directory.
@@ -15,6 +15,30 @@ from the `node-workbench` directory.
 This is where most of your code should go. The only line required in this file is `require('./utils.js');`.
 Whenever you make a change to this file, code will be run and output displayed in your terminal.
 Optinoally you may want to include `MODE = DEG` or `MODE = RAD` to indicate whether trigonometiric functions should expect inputs to be in degree or radian.
+
+## Examples
+##### File: `workbench.js`
+```javascript
+require('./utils.js');
+MODE = DEG;
+
+function f(x) {
+    return pow(x, 3) - 5 * x + 3;
+}
+
+function secant(a, b, n) {
+    out.cyan(`Finding root of f between ${round(a, 3)} and ${round(b, 3)}.`);
+    if (!--n) return b;
+    let c = b - ((b - a) / (f(b) - f(a))) * f(b);
+    return secant(b, c, n);
+}
+
+let root = secant(1, 2, 7);
+out.bgBlue(chalk.yellow.bold(`Root found: ${root}`));
+```
+##### Output: 
+
+![image](https://cloud.githubusercontent.com/assets/1683528/20647546/b2b631c8-b44b-11e6-8710-d3b3bf7a22e7.png)
 
 ### `utils.js`
 A collection of utilities (mostly math) can be found in `utils.js`.
