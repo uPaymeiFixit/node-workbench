@@ -1,0 +1,5 @@
+#!/bin/bash
+
+cd "$(dirname "$0")"
+open calculator.sublime-project -a /Applications/Sublime\ Text.app/
+gulp
