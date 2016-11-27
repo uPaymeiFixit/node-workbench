@@ -139,10 +139,13 @@ out = {
             let line = ``;
             for (let j = 0; j < a[i].length; j++) {
                 let b = a[i][j];
+                if (b === undefined) {
+                    b = '';
+                }
                 if (p) {
                     b = b.toFixed(p);
                 }
-                line += b + `\t`;
+                line += b + ` `;
             }
             this.bgMagenta(line);
         }
