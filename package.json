@@ -2,7 +2,7 @@
   "name": "node-workbench",
   "version": "0.0.2",
   "description": "A quick prototyping environment built with node with tools for math homework.",
-  "main": "START",
+  "main": "workbench.js",
   "repository": "https://github.com/uPaymeiFixit/node-workbench.git",
   "author": "Josh Gibbs <uPaymeiFixit@gmail.com>",
   "license": "MIT",
