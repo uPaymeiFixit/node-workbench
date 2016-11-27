@@ -2,4 +2,5 @@
 
 cd "$(dirname "$0")"
 open calculator.sublime-project -a /Applications/Sublime\ Text.app/
+open calculator.js -a /Applications/Sublime\ Text.app/
 gulp
