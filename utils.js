@@ -20,6 +20,10 @@ tan = (i) => {
 pow = Math.pow;
 sqrt = Math.sqrt;
 
+mod = (n, m) => {
+    return n % m;
+}
+
 PI = pi = π = Math.PI;
 e = E = Math.E;
 º = Math.PI / 180;
