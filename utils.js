@@ -1,4 +1,4 @@
-chalk = require('chalk');
+chalk = Chalk = CHALK = require('chalk');
 
 // https://www.npmjs.com/package/chalk
 module.exports = {}
@@ -34,7 +34,7 @@ radToDeg = (i) => {
 
 abs = Math.abs;
 
-round = (i, p) => {
+round = (i, p = 4) => {
     if (p == 0) {
         throw "Precision cannot be 0.";
     }
@@ -58,100 +58,114 @@ randInt = (min, max) => {
 
 
 out = {
-    default     : function(i) {
-        console.log(`\t${                   (i)}`)
+    default  : (i) => {
+        console.log(`\t${               (i)}`)
     },
-    black       : function(i) {
-        console.log(`\t${chalk.black        (i)}`)
+    black    : (i) => {
+        console.log(`\t${chalk.black    (i)}`)
     },
-    red         : function(i) {
-        console.log(`\t${chalk.red          (i)}`)
+    red      : (i) => {
+        console.log(`\t${chalk.red      (i)}`)
     },
-    green       : function(i) {
-        console.log(`\t${chalk.green        (i)}`)
+    green    : (i) => {
+        console.log(`\t${chalk.green    (i)}`)
     },
-    yellow      : function(i) {
-        console.log(`\t${chalk.yellow       (i)}`)
+    yellow   : (i) => {
+        console.log(`\t${chalk.yellow   (i)}`)
     },
-    blue        : function(i) {
-        console.log(`\t${chalk.blue         (i)}`)
+    blue     : (i) => {
+        console.log(`\t${chalk.blue     (i)}`)
     },
-    magenta     : function(i) {
-        console.log(`\t${chalk.magenta      (i)}`)
+    magenta  : (i) => {
+        console.log(`\t${chalk.magenta  (i)}`)
     },
-    cyan        : function(i) {
-        console.log(`\t${chalk.cyan         (i)}`)
+    cyan     : (i) => {
+        console.log(`\t${chalk.cyan     (i)}`)
     },
-    white       : function(i) {
-        console.log(`\t${chalk.white        (i)}`)
+    white    : (i) => {
+        console.log(`\t${chalk.white    (i)}`)
     },
-    gray        : function(i) {
-        console.log(`\t${chalk.gray         (i)}`)
+    gray     : (i) => {
+        console.log(`\t${chalk.gray     (i)}`)
     },
-    bgBlack     : function(i) {
-        console.log(`\t${chalk.bgBlack      (i)}`)
+    bgBlack  : (i) => {
+        console.log(`\t${chalk.bgBlack  (i)}`)
     },
-    bgRed       : function(i) {
-        console.log(`\t${chalk.bgRed        (i)}`)
+    bgRed    : (i) => {
+        console.log(`\t${chalk.bgRed    (i)}`)
     },
-    bgGreen     : function(i) {
-        console.log(`\t${chalk.bgGreen      (i)}`)
+    bgGreen  : (i) => {
+        console.log(`\t${chalk.bgGreen  (i)}`)
     },
-    bgYellow    : function(i) {
-        console.log(`\t${chalk.bgYellow     (i)}`)
+    bgYellow : (i) => {
+        console.log(`\t${chalk.bgYellow (i)}`)
     },
-    bgBlue      : function(i) {
-        console.log(`\t${chalk.bgBlue       (i)}`)
+    bgBlue   : (i) => {
+        console.log(`\t${chalk.bgBlue   (i)}`)
     },
-    bgMagenta   : function(i) {
-        console.log(`\t${chalk.bgMagenta    (i)}`)
+    bgMagenta: (i) => {
+        console.log(`\t${chalk.bgMagenta(i)}`)
     },
-    bgCyan      : function(i) {
-        console.log(`\t${chalk.bgCyan       (i)}`)
+    bgCyan   : (i) => {
+        console.log(`\t${chalk.bgCyan   (i)}`)
     },
-    bgWhite     : function(i) {
-        console.log(`\t${chalk.bgWhite      (i)}`)
-    },
-
-    help: function() {
-        console.log(`default`);
-        console.log(chalk.black(`black`));
-        console.log(chalk.red(`red`));
-        console.log(chalk.green(`green`));
-        console.log(chalk.yellow(`yellow`));
-        console.log(chalk.blue(`blue`));
-        console.log(chalk.magenta(`magenta`));
-        console.log(chalk.cyan(`cyan`));
-        console.log(chalk.white(`white`));
-        console.log(chalk.gray(`gray`));
-        console.log(chalk.bgBlack(`bgBlack`));
-        console.log(chalk.bgRed(`bgRed`));
-        console.log(chalk.bgGreen(`bgGreen`));
-        console.log(chalk.bgYellow(`bgYellow`));
-        console.log(chalk.bgBlue(`bgBlue`));
-        console.log(chalk.bgMagenta(`bgMagenta`));
-        console.log(chalk.bgCyan(`bgCyan`));
-        console.log(chalk.bgWhite(`bgWhite`));
+    bgWhite  : (i) => {
+        console.log(`\t${chalk.bgWhite  (i)}`)
     },
 
-    reset: function() {
+    help: () => {
+        console.log(                'default'   );
+        console.log(chalk.black(    'black'    ));
+        console.log(chalk.red(      'red'      ));
+        console.log(chalk.green(    'green'    ));
+        console.log(chalk.yellow(   'yellow'   ));
+        console.log(chalk.blue(     'blue'     ));
+        console.log(chalk.magenta(  'magenta'  ));
+        console.log(chalk.cyan(     'cyan'     ));
+        console.log(chalk.white(    'white'    ));
+        console.log(chalk.gray(     'gray'     ));
+        console.log(chalk.bgBlack(  'bgBlack'  ));
+        console.log(chalk.bgRed(    'bgRed'    ));
+        console.log(chalk.bgGreen(  'bgGreen'  ));
+        console.log(chalk.bgYellow( 'bgYellow' ));
+        console.log(chalk.bgBlue(   'bgBlue'   ));
+        console.log(chalk.bgMagenta('bgMagenta'));
+        console.log(chalk.bgCyan(   'bgCyan'   ));
+        console.log(chalk.bgWhite(  'bgWhite'  ));
+    },
+
+    reset: () => {
         return process.stdout.write('\033c');
     },
 
-    array2d: function(a, p) {
-        for (let i = 0; i < a.length; i++) {
-            let line = ``;
-            for (let j = 0; j < a[i].length; j++) {
-                let b = a[i][j];
-                if (b === undefined) {
-                    b = '';
-                }
-                if (p) {
-                    b = b.toFixed(p);
-                }
-                line += b + ` `;
+    // Outputs a 2d array
+    array2d: (array, padding = 4, chalk_color = Chalk.bgMagenta) => {
+        for (const p of array) {
+            let line = '';
+            for (const q of p) {
+                line += pad(q, padding);
             }
-            this.bgMagenta(line);
+            out.default(chalk_color(line));
         }
+    },
+
+    // Outputs a 1d array
+    array: (array, padding, chalk_color) => {
+        out.array2d([array], padding, chalk_color);
     }
+}
+
+// Make a value a fixed width
+pad = (value, max_size) => {
+    value = value.toString();
+    for (let i = 0; i < max_size - value.length; i++) {
+        value = ' ' + value;
+    }
+    return value;
+}
+
+swap = (index_a, index_b, array) => {
+    const temp = array[index_a];
+    array[index_a] = array[index_b];
+    array[index_b] = temp;
 }
