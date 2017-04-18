@@ -5,7 +5,7 @@ MODE = DEG;
 function QuickSort (p, q)
 {
     if (p < q) {
-        let pivotposition = Partition (p, q);
+        let pivotposition = Partition2 (p, q);
         QuickSort (p, pivotposition -1);
         QuickSort (pivotposition+1, q);
     }
@@ -14,91 +14,51 @@ function QuickSort (p, q)
 // From page 29 of Divide & Conquer lecture slides
 function Partition (first, last, pp) // pp is a return value
 {
-    pivot = A[first]; tb = first + 1; ts = last;
+    pivot = A[first]; tb = first + 1; ts = last;                    _print00(first, last); // Pivot =
     while (true) {
-        while (tb <= last && A[tb] < pivot) { tb = tb+1; }
-        while (ts > first &&A[ts] > pivot) { ts = ts-1; }
-        if (tb<ts) swap(tb, ts, A); else break;
-    }
+        while (tb <= last && A[tb] < pivot) {                       _print01(first, last); // Comparing
+            tb = tb+1;
+        }                                                           _print02(first, last); // Found big swap
+        while (ts > first &&A[ts] > pivot) {                        _print03(first, last); // Comparing
+            ts = ts-1;
+        }                                                           _print04(first, last); // Found little swap
+        if (tb<ts) swap(tb, ts, A); else break;                     _print05(first, last); // Swapped
+    }                                                               _print06(first, last); // Returning pivot =
     A[first] = A[ts]; A[ts] = pivot; return ts; //pivot position
 }
 
 // From Homework 2: #2b
 function Partition1 (first, last) {
     pivot = A[first];
-    vacant = first;
-_print('STRT', first, last);
-    for (unknown = first+1; unknown <= last; unknown++)
-_print('CMPR', first, last, unknown);
-        if (A[unknown] < pivot) {
-_print('SWAP', first, last, unknown, vacant);
+    vacant = first;                                                 _print00(first, last); // Pivot =
+    for (unknown = first+1; unknown <= last; unknown++) {           _print11(first, last); // Comparing
+        if (A[unknown] < pivot) {                                   _print12(first, last); // Make appropriate swaps
             A[vacant] = A[unknown];
             A[unknown] = A[vacant+1];
-            vacant++;
+            vacant++;                                               _print13(first, last); // []
         }
-    A[vacant] = pivot;
-_print('PIVT', first, last, vacant);
+    }
+    A[vacant] = pivot;                                              _print14(first, last); // Returning pivot =
     return vacant; //pivot position
 }
 
-// function Partition1 (first, last, A) {
-//     let pivot = A[first];
-//     let vacant = first;
-
-//     printOriginal(first, last, A);
-
-//     for (let unknown = first + 1; unknown <= last; unknown++) {
-//         printCompare(first, last, A, pivot, unknown);
-//         if (A[unknown] < pivot) {
-//             printPreSwaps(first, last, A, vacant, unknown);
-//             A[vacant] = A[unknown];
-//             A[unknown] = A[vacant + 1];
-//             vacant++;
-//             printPostSwaps(first, last, A);
-//         }
-//     }
-//     A[vacant] = pivot;
-//     printPivot(first, last, A, vacant);
-//     return vacant; // pivot position
-// }
-
-function _print (type, first, last, u, v) {
-    let o = '';
-    for (const i in A) {
-        if (i < first || i > last) {
-            o += pad(' ', MAX);
-        } else {
-            switch (type) {
-                case 'STRT':
-                    if (i == first) {
-                        o += Chalk.blue(pad(A[i], MAX));
-                        continue;
-                    }
-                case 'CMPR':
-                    if (i == u) {
-                        o += Chalk.green(pad(A[i], MAX));
-                        continue;
-                    }
-                case 'SWAP':
-                    if (i == v) {
-                        o += Chalk.red(pad(A[i], MAX));
-                        o += Chalk.yellow(pad(A[++i], MAX));
-                        out.array(A, MAX);
-                        continue;
-                    } else if (i == u) {
-                        o += Chalk.green(pad(A[i], MAX));
-
-                        continue;
-                    }
-
-
-            }
+// From Homework 2: #2d
+function Partition2 (low, high)
+{
+    v = A[low];
+    j = low;                                                        _print00(low, high); // Pivot =
+    for (i = (low + 1); i <= high; i++) {                           _print21(low, high); // Comparing
+        if (A[i] < v) {
+            j++;                                                    _print22(low, high); // Swapping
+            swap(i, j, A);
         }
-    }
-
+    }                                                               _print23(low, high); // Swapping
+    pivotposition = j;
+    swap(low, pivotposition, A);                                    _print24(low, high); // Returning pivot =
+    return j;
 }
 
-function printOriginal (first, last, A) {
+function _print00 (first, last) {
     let o = '[';
     for (const i in A) {
         if (i < first || i > last) {
@@ -109,26 +69,121 @@ function printOriginal (first, last, A) {
             o += pad(A[i], MAX);
         }
     }
-    o += `] // Original, pivot = ${Chalk.blue(A[first])}`;
-    out.default(o);
+    o += `] // Pivot = ${Chalk.blue(A[first])}`;
+    print(o);
+}
+function _print01 (first, last) {
+    let o = '[';
+    for (const i in A) {
+        if (i < first || i > last) {
+            o += pad(' ', MAX);
+        } else if (i == first) {
+            o += Chalk.blue(pad(A[i], MAX));
+        } else if (i == tb) {
+            o += Chalk.green(pad(A[i], MAX));
+        } else {
+            o += pad(A[i], MAX);
+        }
+    }
+    o += `] // Comparing ${Chalk.blue(A[first])} & ${Chalk.green(A[tb])}, tb = ${tb}`;
+    print(o);
+}
+function _print02 (first, last) {
+    let o = '[';
+    for (const i in A) {
+        if (i < first || i > last) {
+            o += pad(' ', MAX);
+        } else if (i == first) {
+            o += Chalk.blue(pad(A[i], MAX));
+        } else if (i == tb) {
+            o += Chalk.red(pad(A[i], MAX));
+        } else {
+            o += pad(A[i], MAX);
+        }
+    }
+    o += `] // Found big swap = ${Chalk.red(A[first])}`;
+    print(o);
+}
+function _print03 (first, last) {
+    let o = '[';
+    for (const i in A) {
+        if (i < first || i > last) {
+            o += pad(' ', MAX);
+        } else if (i == tb) {
+            o += Chalk.red(pad(A[i], MAX));
+        } else if (i == first) {
+            o += Chalk.blue(pad(A[i], MAX));
+        } else if (i == ts) {
+            o += Chalk.green(pad(A[i], MAX));
+        } else {
+            o += pad(A[i], MAX);
+        }
+    }
+    o += `] // Comparing ${Chalk.blue(A[first])} & ${Chalk.green(A[ts])}, ts = ${ts}`;
+    print(o);
+}
+function _print04 (first, last) {
+    let o = '[';
+    for (const i in A) {
+        if (i < first || i > last) {
+            o += pad(' ', MAX);
+        } else if (i == first) {
+            o += Chalk.blue(pad(A[i], MAX));
+        } else if (i == ts || i == tb) {
+            o += Chalk.red(pad(A[i], MAX));
+        } else {
+            o += pad(A[i], MAX);
+        }
+    }
+    o += `] // Found little swap = ${Chalk.red(A[ts])}`;
+    print(o);
+}
+function _print05 (first, last) {
+    let o = '[';
+    for (const i in A) {
+        if (i < first || i > last) {
+            o += pad(' ', MAX);
+        } else if (i == first) {
+            o += Chalk.blue(pad(A[i], MAX));
+        } else if (i == ts || i == tb) {
+            o += Chalk.red(pad(A[i], MAX));
+        } else {
+            o += pad(A[i], MAX);
+        }
+    }
+    o += `] // Swapped = ${Chalk.red(A[ts])} & ${Chalk.red(A[tb])}`;
+    print(o);
+}
+function _print06 (first, last) {
+    let o = '[';
+    for (const i in A) {
+        if (i < first || i > last) {
+            o += pad(' ', MAX);
+        } else if (i == ts) {
+            o += Chalk.blue(pad(A[i], MAX));
+        } else {
+            o += pad(A[i], MAX);
+        }
+    }
+    o += `] // Returning pivot = ${Chalk.blue(A[ts])}\n`;
+    print(o);
 }
 
-function printCompare(first, last, A, pivot, unknown) {
+function _print11 (first, last) {
     let o = '[';
     for (const i in A) {
         if (i < first || i > last) {
             o += pad(' ', MAX);
         } else if (i == unknown) {
             o += Chalk.green(pad(A[i], MAX));
-        } else {
+        }  else {
             o += pad(A[i], MAX);
         }
     }
-    o += `] // Compare ${Chalk.blue(pivot)} & ${Chalk.green(A[unknown])}, unknown = ${unknown}`;
-    out.default(o);
+    o += `] // Comparing ${Chalk.blue(pivot)} & ${Chalk.green(A[unknown])}, unknown = ${unknown}`;
+    print(o);
 }
-
-function printPreSwaps(first, last, A, vacant, unknown) {
+function _print12 (first, last) {
     let o = '[';
     for (const i in A) {
         if (i < first || i > last) {
@@ -144,10 +199,9 @@ function printPreSwaps(first, last, A, vacant, unknown) {
         }
     }
     o += `] // Make appropriate swaps`;
-    out.default(o);
+    print(o);
 }
-
-function printPostSwaps (first, last, A) {
+function _print13 (first, last) {
     let o = '[';
     for (const i in A) {
         if (i < first || i > last) {
@@ -157,10 +211,9 @@ function printPostSwaps (first, last, A) {
         }
     }
     o += `]`;
-    out.default(o);
+    print(o);
 }
-
-function printPivot(first, last, A, vacant) {
+function _print14 (first, last) {
     let o = '[';
     for (const i in A) {
         if (i < first || i > last) {
@@ -171,14 +224,78 @@ function printPivot(first, last, A, vacant) {
             o += pad(A[i], MAX);
         }
     }
-    o += `] // Returning ${Chalk.blue(A[vacant])} as our new pivot\n`;
-    out.default(o);
+    o += `] // Returning pivot = ${Chalk.blue(A[vacant])}\n`;
+    print(o);
+}
+
+function _print21 (first, last) {
+    let o = '[';
+    for (const k in A) {
+        if (k < first || k > last) {
+            o += pad(' ', MAX);
+        } else if (k == first) {
+            o += Chalk.blue(pad(A[k], MAX));
+        } else if (k == i) {
+            o += Chalk.green(pad(A[k], MAX));
+        } else {
+            o += pad(A[k], MAX);
+        }
+    }
+    o += `] // Comparing ${Chalk.blue(A[first])} & ${Chalk.green(A[i])}, i = ${i}`;
+    print(o);
+}
+function _print22 (first, last) {
+    let o = '[';
+    for (const k in A) {
+        if (k < first || k > last) {
+            o += pad(' ', MAX);
+        } else if (k == i || k == j) {
+            o += Chalk.red(pad(A[k], MAX));
+        } else if (k == first) {
+            o += Chalk.blue(pad(A[k], MAX));
+        } else {
+            o += pad(A[k], MAX);
+        }
+    }
+    o += `] // Swapping ${Chalk.red(A[i])} & ${Chalk.red(A[j])}`;
+    print(o);
+}
+function _print23 (first, last) {
+    let o = '[';
+    for (const k in A) {
+        if (k < first || k > last) {
+            o += pad(' ', MAX);
+        } else if (k == first || k == j) {
+            o += Chalk.red(pad(A[k], MAX));
+        } else if (k == first) {
+            o += Chalk.blue(pad(A[k], MAX));
+        } else {
+            o += pad(A[k], MAX);
+        }
+    }
+    o += `] // Swapping ${Chalk.red(A[first])} & ${Chalk.red(A[j])}`;
+    print(o);
+}
+function _print24 (first, last) {
+    let o = '[';
+    for (const i in A) {
+        if (i < first || i > last) {
+            o += pad(' ', MAX);
+        } else if (i == j) {
+            o += Chalk.blue(pad(A[i], MAX));
+        } else {
+            o += pad(A[i], MAX);
+        }
+    }
+    o += `] // Returning pivot = ${Chalk.blue(A[j])}\n`;
+    print(o);
 }
 
 // Initiate the quicksort function and print start and end array
 function sort (A) {
     this.A = A;
-    out.array(A, 4, Chalk.bgRed);
+    out.array(A, 4, Chalk.bgMagenta);
+    print('');
     QuickSort(0, A.length - 1, A);
     out.array(A, 4, Chalk.bgGreen);
 }
