@@ -141,11 +141,11 @@ out = {
     // Outputs a 2d array
     array2d: (array, padding = 4, chalk_color = Chalk.bgMagenta) => {
         for (const p of array) {
-            let line = '';
+            let line = '[';
             for (const q of p) {
                 line += pad(q, padding);
             }
-            out.default(chalk_color(line));
+            out.default(chalk_color(line + ']'));
         }
     },
 
