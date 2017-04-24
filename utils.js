@@ -155,6 +155,8 @@ out = {
     }
 }
 
+print = out.default;
+
 // Make a value a fixed width
 pad = (value, max_size) => {
     value = value.toString();
