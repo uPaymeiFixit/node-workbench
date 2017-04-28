@@ -52,7 +52,7 @@ rand = random = Math.random;
 randRange = (min, max) => {
     return Math.random() * (max - min) + min;
 }
-randInt = (min, max) => {
+Random = randInt = (min = 0, max = 2048) => {
     return Math.round(randRange(min, max));
 }
 
@@ -158,9 +158,9 @@ out = {
 print = out.default;
 
 // Make a value a fixed width
-pad = (value, max_size) => {
+pad = (value, max_size = 4) => {
     value = value.toString();
-    for (let i = 0; i < max_size - value.length; i++) {
+    while (value.length < max_size) {
         value = ' ' + value;
     }
     return value;
@@ -170,4 +170,8 @@ swap = (index_a, index_b, array) => {
     const temp = array[index_a];
     array[index_a] = array[index_b];
     array[index_b] = temp;
+}
+
+milliseconds = () => {
+    return new Date().getTime();
 }
