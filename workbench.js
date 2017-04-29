@@ -105,12 +105,17 @@ function Partition (first, last) {
     return ts; //pivot position
 }
 
+function makeRandomArray (n) {
+    A = [];
+    for (let i = 0; i < n; i++) {
+        A[i] = Random();
+    }
+}
+
 function makeArray (n) {
     A = [];
-    U = [];
     for (let i = 0; i < n; i++) {
         A[i] = i;
-        U[i] = -1;
     }
 }
 
@@ -119,14 +124,14 @@ function test () {
     out.green('|    n | Insert | Merge  | Quick1 | Quick2 | Quick3 |');
     out.green(' ———————————————————————————————————————————————————')
     for (let i = 1; i <= 16; i++) {
-        let n = Math.pow(2, i);
-        makeArray(n);
+        const n = Math.pow(2, i);
+        makeRandomArray(n);
 
-        let insert = ''//time(InsertionSort);
-        let merges = ''//time(MergeSort, A);
-        let quick1 = ''//time(QuickSort1, 0, n - 1);
-        let quick2 = ''//time(QuickSort2, 0, n - 1);
-        let quick3 = time(QuickSort3, 0, n - 1);
+        const insert = ''//time(InsertionSort);
+        const merges = ''//time(MergeSort, A);
+        const quick1 = ''//time(QuickSort1, 0, n - 1);
+        const quick2 = ''//time(QuickSort2, 0, n - 1);
+        const quick3 = time(QuickSort3, 0, n - 1);
 
         let row = '|' + pad('2^' + i, 5) + ' |';
         row += pad(insert, 7) + ' |';
@@ -140,17 +145,47 @@ function test () {
 }
 
 function time (f, p1, p2) {
-    let start = milliseconds();
-    for (let i = 0; i < 10000; i++) {
+    const start = milliseconds();
+    const n = 1;
+    for (let i = 0; i < n; i++) {
         f(p1, p2);
     }
-    let end = milliseconds();
-    return (end - start) / 10000;
+    const end = milliseconds();
+    return (end - start) / n;
 }
 
 test();
 
 /*
+RANDOM
+
+     ———————————————————————————————————————————————————
+    |    n | Insert | Merge  | Quick1 | Quick2 | Quick3 |
+     ———————————————————————————————————————————————————
+    |  2^1 |      0 |      0 |        |        |        |
+    |  2^2 |      0 |      0 |        |        |        |
+    |  2^3 |      0 |      0 |        |        |        |
+    |  2^4 |      0 |      0 |        |        |        |
+    |  2^5 |      0 |      0 |        |        |        |
+    |  2^6 |      0 |      0 |        |        |        |
+    |  2^7 |      1 |      1 |        |        |        |
+    |  2^8 |      1 |      1 |        |        |        |
+    |  2^9 |      3 |      0 |        |        |        |
+    | 2^10 |     13 |      2 |        |        |        |
+    | 2^11 |     54 |      3 |        |        |        |
+    | 2^12 |    214 |      9 |        |        |        |
+    | 2^13 |    843 |     17 |        |        |        |
+    | 2^14 |   3368 |     38 |        |        |        |
+    | 2^15 |  13352 |     81 |        |        |        |
+    | 2^16 |  54973 |    178 |        |        |        |
+     ———————————————————————————————————————————————————
+
+
+
+
+
+
+SEQUENTIAL
      ————————————————————————————————————————————————————
     |    n | Insert | Merge  | Quick1 | Quick2  | Quick3 |
      ————————————————————————————————————————————————————
