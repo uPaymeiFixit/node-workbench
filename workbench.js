@@ -1,6 +1,10 @@
 require('./utils.js');
 MODE = DEG;
 
+/******************************************************************************/
+/************************   START SORTING ALGORITHMS   ************************/
+/******************************************************************************/
+
 // From page 25 of Intro lecture slides
 function InsertionSort () {
     for (const i in A) {
@@ -25,11 +29,12 @@ function MergeSort (a) {
     let left   = a.slice(0, middle);
     let right  = a.slice(middle, a.length);
 
-    return Merge(MergeSort(left), MergeSort(right));
+    A = Merge(MergeSort(left), MergeSort(right));
+    return A;
 }
 
 // From page 22 of Divide & Conquer lecture slides
-function Merge(left, right) {
+function Merge (left, right) {
     let result = [];
 
     while (left.length && right.length) {
@@ -105,105 +110,89 @@ function Partition (first, last) {
     return ts; //pivot position
 }
 
-function makeRandomArray (n) {
-    A = [];
-    for (let i = 0; i < n; i++) {
-        A[i] = Random();
-    }
-}
+/******************************************************************************/
+/*************************   END SORTING ALGORITHMS   *************************/
+/******************************************************************************/
 
-function makeArray (n) {
-    A = [];
-    for (let i = 0; i < n; i++) {
-        A[i] = i;
-    }
-}
+/******************************************************************************/
+/***************************   START TESTING TOOLS   **************************/
+/******************************************************************************/
 
-function test () {
-    out.green(' ———————————————————————————————————————————————————');
-    out.green('|    n | Insert | Merge  | Quick1 | Quick2 | Quick3 |');
-    out.green(' ———————————————————————————————————————————————————')
-    for (let i = 1; i <= 16; i++) {
+// Parameters
+const PRECISION = 10; // Number of times to run an algorithm to time it
+const MIN_N = 1; // Starting power 2^n
+const MAX_N = 16; // Stopping power 2^n
+const RANDOM = true; // Test with random values?
+
+// Main testing function
+(() => {
+    row('n', 'Name', 'Time (ms)', 'Array', 'HEAD');
+    for (let i = MIN_N; i <= MAX_N; i++) {
         const n = Math.pow(2, i);
-        makeRandomArray(n);
+        const array = makeArray(n);
 
-        const insert = ''//time(InsertionSort);
-        const merges = ''//time(MergeSort, A);
-        const quick1 = ''//time(QuickSort1, 0, n - 1);
-        const quick2 = ''//time(QuickSort2, 0, n - 1);
-        const quick3 = time(QuickSort3, 0, n - 1);
-
-        let row = '|' + pad('2^' + i, 5) + ' |';
-        row += pad(insert, 7) + ' |';
-        row += pad(merges, 7) + ' |';
-        row += pad(quick1, 7) + ' |';
-        row += pad(quick2, 7) + ' |';
-        row += pad(quick3, 7) + ' |';
-        out.green(row);
+        A = array.slice();
+        row('2^' + i, 'Original', 'N/A', A);
+        A = array.slice();
+        row('', 'Insertion', time(InsertionSort), A);
+        A = array.slice();
+        row('', 'Merge', time(MergeSort, A), A);
+        A = array.slice();
+        row('', 'Quick 1', time(QuickSort1, 0, n - 1), A);
+        A = array.slice();
+        row('', 'Quick 2', time(QuickSort2, 0, n - 1), A);
+        A = array.slice();
+        row('', 'Quick 3', time(QuickSort3, 0, n - 1), A);
+        if (i < MAX_N) {
+            row(null, null, null, null, 'BREAK');
+        }
     }
-    out.green(' ———————————————————————————————————————————————————')
+    row(null, null, null, null, 'TAIL');
+})();
+
+// Make an array of size n, random or sequential
+function makeArray (n) {
+    let array = [];
+    for (let i = 0; i < n; i++) {
+        array[i] = RANDOM ? Random(0, 999) : i;
+    }
+    return array;
 }
 
+// Calculate the average time it takes to run f with parameters p1, p2
 function time (f, p1, p2) {
     const start = milliseconds();
-    const n = 1;
-    for (let i = 0; i < n; i++) {
+    for (let i = 0; i < PRECISION; i++) {
         f(p1, p2);
     }
     const end = milliseconds();
-    return (end - start) / n;
+    return (end - start) / PRECISION;
 }
 
-test();
-
-/*
-RANDOM
-
-     ———————————————————————————————————————————————————
-    |    n | Insert | Merge  | Quick1 | Quick2 | Quick3 |
-     ———————————————————————————————————————————————————
-    |  2^1 |      0 |      0 |        |        |        |
-    |  2^2 |      0 |      0 |        |        |        |
-    |  2^3 |      0 |      0 |        |        |        |
-    |  2^4 |      0 |      0 |        |        |        |
-    |  2^5 |      0 |      0 |        |        |        |
-    |  2^6 |      0 |      0 |        |        |        |
-    |  2^7 |      1 |      1 |        |        |        |
-    |  2^8 |      1 |      1 |        |        |        |
-    |  2^9 |      3 |      0 |        |        |        |
-    | 2^10 |     13 |      2 |        |        |        |
-    | 2^11 |     54 |      3 |        |        |        |
-    | 2^12 |    214 |      9 |        |        |        |
-    | 2^13 |    843 |     17 |        |        |        |
-    | 2^14 |   3368 |     38 |        |        |        |
-    | 2^15 |  13352 |     81 |        |        |        |
-    | 2^16 |  54973 |    178 |        |        |        |
-     ———————————————————————————————————————————————————
-
-
-
-
-
-
-SEQUENTIAL
-     ————————————————————————————————————————————————————
-    |    n | Insert | Merge  | Quick1 | Quick2  | Quick3 |
-     ————————————————————————————————————————————————————
-    |  2^1 | 0.0029 | 0.0009 | 0.0003 | 0.00330 | 0.0006 |
-    |  2^2 | 0.0024 | 0.0030 | 0.0017 | 0.00371 | 0.0019 |
-    |  2^3 | 0.0023 | 0.0052 | 0.0010 | 0.00212 | 0.0009 |
-    |  2^4 | 0.0019 | 0.0101 | 0.0021 | 0.00228 | 0.0033 |
-    |  2^5 | 0.0053 | 0.0212 | 0.0069 | 0.09232 | 0.0043 |
-    |  2^6 | 0.0108 | 0.0448 | 0.0225 | 0.53213 | 0.0091 |
-    |  2^7 | 0.0221 | 0.1024 | 0.0834 | 1.94635 | 0.0200 |
-    |  2^8 | 0.0373 | 0.2800 | 0.3443 | 10.5519 | 0.0432 |
-    |  2^9 | 0.0606 | 0.5697 | 1.2248 | 34.0345 | 0.0902 |
-    | 2^10 | 0.1675 | 1.2813 | 5.0680 | 151.345 | 0.1981 |
-    | 2^11 | 0.3847 | 2.9232 | 23.348 | 700.958 | 0.3884 |
-    | 2^12 | 0.5859 | 6.6639 | 100.11 | 2179.58 | 0.8247 |
-    | 2^13 | 1.2566 | 14.023 | 536.45 | 11015.2 | 1.8045 |
-    | 2^14 | 2.6781 | 27.187 | 1858.0 | 43738.8 | 4.4902 |
-    | 2^15 | 15.731 | 70.002 | 6454.2 | 484408. | 25.563 |
-    | 2^16 | 27.023 | 159.25 | 27964. | 1730499 | 49.837 |
-     ————————————————————————————————————————————————————
-*/
+// Print table rows (handle colors)
+function row (n, name, time, array, position) {
+    if (position == 'HEAD') {
+        out.white('┌' + leftPad('┬', 7, '─') + leftPad('┬', 12, '─') + leftPad('┬', 12, '─') + leftPad('┐', 133, '─'));
+        n = Chalk.bold(Chalk.white(leftPad(n, 4)));
+        name = Chalk.bold(Chalk.white(leftPad(name, 9)));
+        time = Chalk.bold(Chalk.white(leftPad(time, 9)));
+        array = Chalk.bold(Chalk.white(rightPad(array, 130)));
+        out.white(`│ ${n} │ ${name} │ ${time} │ ${array} │`);
+        row(null, null, null, null, 'BREAK');
+    } else if (position == 'BREAK') {
+        out.white('├' + leftPad('┼', 7, '─') + leftPad('┼', 12, '─') + leftPad('┼', 12, '─') + leftPad('┤', 133, '─'));
+    } else if (position == 'TAIL') {
+        out.white('└' + leftPad('┴', 7, '─') + leftPad('┴', 12, '─') + leftPad('┴', 12, '─') + leftPad('┘', 133, '─'));
+    } else {
+        name = Chalk.cyan(leftPad(name, 9));
+        time = Chalk.red(leftPad(time, 9));
+        array = Chalk.green(rightPad(StringifyArray(array, 4, 32), 130));
+        if (n != '') {
+            name = Chalk.bold(name);
+            time = Chalk.bold(time);
+            array = Chalk.bold(array);
+        }
+        n = Chalk.bold(Chalk.yellow(leftPad(n   , 4)));
+        out.white(`│ ${n} │ ${name} │ ${time} │ ${array} │`);
+    }
+}
