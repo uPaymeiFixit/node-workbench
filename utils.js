@@ -1,4 +1,6 @@
 chalk = Chalk = CHALK = require('chalk');
+leftPad = require('left-pad');
+rightPad = require('right-pad');
 
 // https://www.npmjs.com/package/chalk
 module.exports = {}
@@ -52,7 +54,7 @@ rand = random = Math.random;
 randRange = (min, max) => {
     return Math.random() * (max - min) + min;
 }
-randInt = (min, max) => {
+Random = randInt = (min = 0, max = 2048) => {
     return Math.round(randRange(min, max));
 }
 
@@ -140,13 +142,7 @@ out = {
 
     // Outputs a 2d array
     array2d: (array, padding = 4, chalk_color = Chalk.bgMagenta) => {
-        for (const p of array) {
-            let line = '[';
-            for (const q of p) {
-                line += pad(q, padding);
-            }
-            out.default(chalk_color(line + ']'));
-        }
+        out.default(chalk_color(Stringify2dArray(array, padding)));
     },
 
     // Outputs a 1d array
@@ -155,17 +151,33 @@ out = {
     }
 }
 
-// Make a value a fixed width
-pad = (value, max_size) => {
-    value = value.toString();
-    for (let i = 0; i < max_size - value.length; i++) {
-        value = ' ' + value;
+Stringify2dArray = (array, padding = 4, max = -1) => {
+    let line = '';
+    for (const p of array) {
+        line += '[';
+        for (const q in p) {
+            if (q == max - 1) {
+                return line + ' ...';
+            }
+            line += leftPad(p[q], padding);
+        }
+        line += ']';
     }
-    return value;
+    return line;
 }
+
+StringifyArray = (array, padding = 4, max = -1) => {
+    return Stringify2dArray([array], padding, max);
+}
+
+print = out.default;
 
 swap = (index_a, index_b, array) => {
     const temp = array[index_a];
     array[index_a] = array[index_b];
     array[index_b] = temp;
+}
+
+milliseconds = () => {
+    return new Date().getTime();
 }
