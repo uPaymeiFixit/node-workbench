@@ -11,6 +11,7 @@ function InsertionSort () {
         let target = A[i];
         let j = i - 1;
         while (j >= 0 && target < A[j]) {
+            count++;
             A[j + 1] = A[j];
             j--;
         }
@@ -21,6 +22,7 @@ function InsertionSort () {
 
 // From page 20 of Divide & Conquer lecture slides
 function MergeSort (a) {
+    count++;
     if (a.length < 2) {
         return a;
     }
@@ -58,6 +60,7 @@ function Merge (left, right) {
 
 // From page 29 of Divide & Conquer lecture slides
 function QuickSort1 (p, q) {
+    count++;
     if (p < q) {
         let pivotposition = Partition (p, q);
         QuickSort1 (p, pivotposition - 1);
@@ -66,6 +69,7 @@ function QuickSort1 (p, q) {
 }
 
 function QuickSort2 (p, q) {
+    count++;
     if (q - p <= 16) {
         InsertionSort();
     } else if (p < q) {
@@ -76,6 +80,7 @@ function QuickSort2 (p, q) {
 }
 
 function QuickSort3 (p, q) {
+    count++;
     if (p < q) {
         if (q - p + 1 >= 16) {
             swap(p, p + Random() % (q - p + 1), A);
@@ -123,31 +128,38 @@ const PRECISION = 10; // Number of times to run an algorithm to time it
 const MIN_N = 1; // Starting power 2^n
 const MAX_N = 16; // Stopping power 2^n
 const RANDOM = true; // Test with random values?
+let count = 0;
 
 // Main testing function
 (() => {
-    row('n', 'Name', 'Time (ms)', 'Array', 'HEAD');
+    row('n', 'Name', 'Time (ms)', 'Runs', 'Array', 'HEAD');
     for (let i = MIN_N; i <= MAX_N; i++) {
         const n = Math.pow(2, i);
         const array = makeArray(n);
 
         A = array.slice();
-        row('2^' + i, 'Original', 'N/A', A);
+        count = 0;
+        row('2^' + i, 'Original', 'N/A', 'N/A', A);
         A = array.slice();
-        row('', 'Insertion', time(InsertionSort), A);
+        count = 0;
+        row('', 'Insertion', time(InsertionSort), count, A);
         A = array.slice();
-        row('', 'Merge', time(MergeSort, A), A);
+        count = 0;
+        row('', 'Merge', time(MergeSort, A), count, A);
         A = array.slice();
-        row('', 'Quick 1', time(QuickSort1, 0, n - 1), A);
+        count = 0;
+        row('', 'Quick 1', time(QuickSort1, 0, n - 1), count, A);
         A = array.slice();
-        row('', 'Quick 2', time(QuickSort2, 0, n - 1), A);
+        count = 0;
+        row('', 'Quick 2', time(QuickSort2, 0, n - 1), count, A);
         A = array.slice();
-        row('', 'Quick 3', time(QuickSort3, 0, n - 1), A);
+        count = 0;
+        row('', 'Quick 3', time(QuickSort3, 0, n - 1), count, A);
         if (i < MAX_N) {
-            row(null, null, null, null, 'BREAK');
+            row(null, null, null, null, null, 'BREAK');
         }
     }
-    row(null, null, null, null, 'TAIL');
+    row(null, null, null, null, null, 'TAIL');
 })();
 
 // Make an array of size n, random or sequential
@@ -170,29 +182,32 @@ function time (f, p1, p2) {
 }
 
 // Print table rows (handle colors)
-function row (n, name, time, array, position) {
+function row (n, name, time, count, array, position) {
     if (position == 'HEAD') {
-        out.white('┌' + leftPad('┬', 7, '─') + leftPad('┬', 12, '─') + leftPad('┬', 12, '─') + leftPad('┐', 133, '─'));
+        out.white('┌' + leftPad('┬', 7, '─') + leftPad('┬', 12, '─') + leftPad('┬', 12, '─') + leftPad('┬', 12, '─') + leftPad('┐', 133, '─'));
         n = Chalk.bold(Chalk.white(leftPad(n, 4)));
         name = Chalk.bold(Chalk.white(leftPad(name, 9)));
         time = Chalk.bold(Chalk.white(leftPad(time, 9)));
+        count = Chalk.bold(Chalk.white(leftPad(count, 9)));
         array = Chalk.bold(Chalk.white(rightPad(array, 130)));
-        out.white(`│ ${n} │ ${name} │ ${time} │ ${array} │`);
-        row(null, null, null, null, 'BREAK');
+        out.white(`│ ${n} │ ${name} │ ${time} │ ${count} │ ${array} │`);
+        row(null, null, null, null, null, 'BREAK');
     } else if (position == 'BREAK') {
-        out.white('├' + leftPad('┼', 7, '─') + leftPad('┼', 12, '─') + leftPad('┼', 12, '─') + leftPad('┤', 133, '─'));
+        out.white('├' + leftPad('┼', 7, '─') + leftPad('┼', 12, '─') + leftPad('┼', 12, '─') + leftPad('┼', 12, '─') + leftPad('┤', 133, '─'));
     } else if (position == 'TAIL') {
-        out.white('└' + leftPad('┴', 7, '─') + leftPad('┴', 12, '─') + leftPad('┴', 12, '─') + leftPad('┘', 133, '─'));
+        out.white('└' + leftPad('┴', 7, '─') + leftPad('┴', 12, '─') + leftPad('┴', 12, '─') + leftPad('┴', 12, '─') + leftPad('┘', 133, '─'));
     } else {
         name = Chalk.cyan(leftPad(name, 9));
         time = Chalk.red(leftPad(time, 9));
+        count = Chalk.magenta(leftPad(count, 9));
         array = Chalk.green(rightPad(StringifyArray(array, 4, 32), 130));
         if (n != '') {
             name = Chalk.bold(name);
             time = Chalk.bold(time);
+            count = Chalk.bold(count);
             array = Chalk.bold(array);
         }
         n = Chalk.bold(Chalk.yellow(leftPad(n   , 4)));
-        out.white(`│ ${n} │ ${name} │ ${time} │ ${array} │`);
+        out.white(`│ ${n} │ ${name} │ ${time} │ ${count} │ ${array} │`);
     }
 }
