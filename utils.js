@@ -1,6 +1,7 @@
 chalk = Chalk = CHALK = require('chalk');
 leftPad = require('left-pad');
 rightPad = require('right-pad');
+Table = require('table');
 
 // https://www.npmjs.com/package/chalk
 module.exports = {}
@@ -58,6 +59,21 @@ Random = randInt = (min = 0, max = 2048) => {
     return Math.round(randRange(min, max));
 }
 
+randomIntArray = (length = 10, min = 0, max = 100) => {
+    let array = [];
+    while (array.length < length) {
+        array.push(randInt(min, max));
+    }
+    return array;
+}
+
+sequentialIntArray = (length = 10, start = 0) => {
+    let array = [];
+    for (let i = start; i < length; i++) {
+        array[i] = i;
+    }
+    return array;
+}
 
 out = {
     default  : (i) => {
@@ -148,8 +164,29 @@ out = {
     // Outputs a 1d array
     array: (array, padding, chalk_color) => {
         out.array2d([array], padding, chalk_color);
+    },
+
+    setTable: (config) => {
+        out.table_header = true;
+        out.table_config = config;
+        out.table_stream = Table.createStream(config);
+    },
+
+    table: (array) => {
+        for (const i in array) {
+            if (out.table_config.columns[i].patch) {
+                array[i] = out.table_config.columns[i].patch(array[i]);
+            }
+            if (out.table_config.boldHeader && out.table_header) {
+                array[i] = Chalk.bold(array[i]);
+            }
+        }
+        out.table_stream.write(array);
+        out.table_header = false;
     }
 }
+
+out.setTable({columnDefault: {width: 20}, columnCount: 4});
 
 Stringify2dArray = (array, padding = 4, max = -1) => {
     let line = '';
@@ -170,14 +207,77 @@ StringifyArray = (array, padding = 4, max = -1) => {
     return Stringify2dArray([array], padding, max);
 }
 
+
+
 print = out.default;
 
-swap = (index_a, index_b, array) => {
-    const temp = array[index_a];
-    array[index_a] = array[index_b];
-    array[index_b] = temp;
-}
 
 milliseconds = () => {
     return new Date().getTime();
+}
+
+Array.prototype.stringify = function (padding = 3, max_length = -1) {
+    let line = '';
+    if (typeof this[0] == 'object') {
+        for (const val of this) {
+            line += val.stringify(padding, max_length) + '\n';
+        }
+    } else {
+        line += '[';
+        for (const val of this) {
+            if (max_length != -1 && line.length >= max_length) {
+                return line + ' ...';
+            }
+            line += leftPad(val, padding);
+        }
+        line += ']';
+    }
+    return line;
+}
+
+Array.prototype.test = function () {
+    for (const i of this)
+    console.log(i);
+}
+
+// Array.prototype.stringify = function (padding = 3, max_length = -1) {
+//     let line = '[';
+//     for (const i in this) {
+//         if (typeof this[i] == 'object') {
+//             line += this[i].stringify(padding, max_length) + ',\n';
+//         } else {
+//             if (i == max_length - 1) return line + ' ...';
+//             line += leftPad(this[i], padding) + ' ';
+//         }
+//     }
+//     return line + ']';
+// }
+
+Array.prototype.swap = function (index_a, index_b) {
+    const temp = this[index_a];
+    this[index_a] = this[index_b];
+    this[index_b] = temp;
+    return this;
+}
+
+Array.prototype.clone = function () {
+    let result = [];
+    for (const i in this) {
+        if (typeof this[i] == 'object') {
+            result[i] = this[i].clone();
+        } else {
+            result[i] = this[i];
+        }
+    }
+    return result;
+}
+
+Array.prototype.median = function () {
+    return this[this.length / 2];
+}
+
+Array.prototype.mean = function () {
+    let sum = 0;
+    for (const i of this) sum += i;
+    return sum / this.length;
 }
