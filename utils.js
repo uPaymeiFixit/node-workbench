@@ -10,32 +10,19 @@ RAD = true;
 DEG = false;
 MODE = RAD;
 
-cos = (i) => {
-    return MODE ? Math.cos(i) : Math.cos(radToDeg(i));
-}
-sin = (i) => {
-    return MODE ? Math.sin(i) : Math.sin(radToDeg(i));
-}
-tan = (i) => {
-    return MODE ? Math.tan(i) : Math.tan(radToDeg(i));
-}
+cos = (i) => {return MODE ? Math.cos(i) : Math.cos(radToDeg(i));}
+sin = (i) => {return MODE ? Math.sin(i) : Math.sin(radToDeg(i));}
+tan = (i) => {return MODE ? Math.tan(i) : Math.tan(radToDeg(i));}
+radToDeg = (i) => {return i * Math.PI / 180;}
 
 pow = Math.pow;
 sqrt = Math.sqrt;
-
-mod = (n, m) => {
-    return n % m;
-}
-
 PI = pi = π = Math.PI;
 e = E = Math.E;
 º = Math.PI / 180;
-
-radToDeg = (i) => {
-    return i * Math.PI / 180;
-}
-
 abs = Math.abs;
+ceil = Math.ceil;
+floor = Math.floor;
 
 round = (i, p = 4) => {
     if (p == 0) {
@@ -48,8 +35,6 @@ round = (i, p = 4) => {
     return Math.round(i);
 }
 
-ceil = Math.ceil;
-floor = Math.floor;
 
 rand = random = Math.random;
 randRange = (min, max) => {
@@ -156,16 +141,6 @@ out = {
         return process.stdout.write('\033c');
     },
 
-    // Outputs a 2d array
-    array2d: (array, padding = 4, chalk_color = Chalk.bgMagenta) => {
-        out.default(chalk_color(Stringify2dArray(array, padding)));
-    },
-
-    // Outputs a 1d array
-    array: (array, padding, chalk_color) => {
-        out.array2d([array], padding, chalk_color);
-    },
-
     setTable: (config) => {
         out.table_header = true;
         out.table_config = config;
@@ -173,7 +148,7 @@ out = {
     },
 
     table: (array) => {
-        for (const i in array) {
+        for (let i = 0; i < array.length; i++) {
             if (out.table_config.columns[i].patch) {
                 array[i] = out.table_config.columns[i].patch(array[i]);
             }
@@ -188,32 +163,18 @@ out = {
 
 out.setTable({columnDefault: {width: 20}, columnCount: 4});
 
-Stringify2dArray = (array, padding = 4, max = -1) => {
-    let line = '';
-    for (const p of array) {
-        line += '[';
-        for (const q in p) {
-            if (q == max - 1) {
-                return line + ' ...';
-            }
-            line += leftPad(p[q], padding);
-        }
-        line += ']';
-    }
-    return line;
-}
-
-StringifyArray = (array, padding = 4, max = -1) => {
-    return Stringify2dArray([array], padding, max);
-}
-
-
 
 print = out.default;
 
 
-milliseconds = () => {
-    return new Date().getTime();
+
+microseconds = () =>  {
+    const hrTime = process.hrtime()
+    return hrTime[0] * 1000000 + hrTime[1] / 1000;
+}
+
+Array.prototype.print = function (padding = 3, max_length = -1) {
+    out.magenta(this.stringify(padding, max_length));
 }
 
 Array.prototype.stringify = function (padding = 3, max_length = -1) {
@@ -226,32 +187,14 @@ Array.prototype.stringify = function (padding = 3, max_length = -1) {
         line += '[';
         for (const val of this) {
             if (max_length != -1 && line.length >= max_length) {
-                return line + ' ...';
+                return line.substring(0, max_length - 3) + '...';
             }
-            line += leftPad(val, padding);
+            line += leftPad(val, padding) + ' ';
         }
         line += ']';
     }
     return line;
 }
-
-Array.prototype.test = function () {
-    for (const i of this)
-    console.log(i);
-}
-
-// Array.prototype.stringify = function (padding = 3, max_length = -1) {
-//     let line = '[';
-//     for (const i in this) {
-//         if (typeof this[i] == 'object') {
-//             line += this[i].stringify(padding, max_length) + ',\n';
-//         } else {
-//             if (i == max_length - 1) return line + ' ...';
-//             line += leftPad(this[i], padding) + ' ';
-//         }
-//     }
-//     return line + ']';
-// }
 
 Array.prototype.swap = function (index_a, index_b) {
     const temp = this[index_a];
@@ -273,7 +216,8 @@ Array.prototype.clone = function () {
 }
 
 Array.prototype.median = function () {
-    return this[this.length / 2];
+    const a = this.slice().sort((a, b) => {return a - b});
+    return a[Math.floor(a.length / 2)];
 }
 
 Array.prototype.mean = function () {

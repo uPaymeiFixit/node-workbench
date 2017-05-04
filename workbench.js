@@ -2,9 +2,9 @@ require('./utils.js');
 MODE = DEG;
 
 // Parameters
-const PRECISION = 1; // Number of times to run an algorithm to time it
+const PRECISION = 100; // Number of times to run an algorithm to time it
 const MIN_N = 1; // Starting power 2^n
-const MAX_N = 8; // Stopping power 2^n
+const MAX_N = 16; // Stopping power 2^n
 const RANDOM = true; // Test with random values?
 
 /******************************************************************************/
@@ -12,8 +12,8 @@ const RANDOM = true; // Test with random values?
 /******************************************************************************/
 
 // From page 25 of Intro lecture slides
-function InsertionSort (p, q) {
-    for (let i = p; i < q; i++) {
+function InsertionSort () {
+    for (let i = 0; i < A.length; i++) {
         let target = A[i];
         let j = i - 1;
         while (++count && j >= 0 && target < A[j]) {
@@ -24,10 +24,10 @@ function InsertionSort (p, q) {
     }
 }
 
-// From page 20 of Divide & Conquer lecture slides
+// My solution, theoretically faster but it's not working yet
 // function MergeSort (low, high) {
 //     if (low < high) {
-//         const mid = Math.floor((low + high) / 2);
+//         const mid = floor((low + high) / 2);
 //         MergeSort(low, mid);
 //         MergeSort(mid + 1, high);
 //         Merge(low, mid, high);
@@ -35,66 +35,66 @@ function InsertionSort (p, q) {
 // }
 
 // function Merge (low, mid, high) {
+//     out.red(low + ', ' + mid + ', ' + high);
 //     let i = low;
-//     let j = mid + 1;
+//     let j = mid;
 //     let k = low;
+//     const U = [];
 //     while (i <= mid && j <= high) {
-//         if (A[i] <= A[j]) {
+//         if (A[i] < A[j]) {
 //             U[k] = A[i];
-//         }
-//     }
-// }
-
-
-function MergeSort () {
-    count++;
-    if (A.length < 2) {
-        return A;
-    }
-
-    let middle = parseInt(A.length / 2);
-    let left   = A.slice(0, middle);
-    let right  = A.slice(middle, A.length);
-
-    A = Merge(MergeSort(left), MergeSort(right));
-}
-
-function Merge (L, R) {
-    let A = [];
-    let l = 0;
-    let r = 0;
-    while (l < L.length && r < R.length) {
-        A.push(L[l] < R[r] ? L[l++] : R[r++]);
-    }
-    while (l < L.length) A.push(L[l++]);
-    while (r < R.length) A.push(R[r++]);
-    return A;
-}
-
-// // From page 22 of Divide & Conquer lecture slides
-// function Merge (L, R) {
-//     let result = [];
-
-//     while (L.length && R.length) {
-//         if (L[0] <= R[0]) {
-//             result.push(L.shift());
+//             i++;
 //         } else {
-//             result.push(R.shift());
+//             U[k] = A[j];
+//             j++;
 //         }
+//         k++;
 //     }
-
-//     while (L.length) {
-//         result.push(L.shift());
+//     for (; j <= high; j++, k++) {
+//         U[k] = A[j];
 //     }
-
-//     while (R.length) {
-//         result.push(R.shift());
+//     for (; i <= mid; i++, k++) {
+//         U[k] = A[i];
 //     }
-
-//     return result;
+//     out.yellow(U);
+//     for (let p = 0; p < U.length; p++) {
+//         A[p + low] = U[p];
+//     }
+//     out.green(A);
 // }
 
+// From page 20 of Divide & Conquer lecture slides
+function MergeSort () {
+    A = _MergeSort(A);
+}
 
+function _MergeSort(array) {
+    count++;
+    if (array.length < 2) return array;
+
+    const middle = array.length / 2;
+    const L = array.slice(0, middle);
+    const R = array.slice(middle, array.length);
+
+    return Merge(_MergeSort(L), _MergeSort(R));
+}
+
+function Merge(left, right) {
+    const result = [];
+
+    while (left.length && right.length) {
+        if (left[0] <= right[0]) {
+            result.push(left.shift());
+        } else {
+            result.push(right.shift());
+        }
+    }
+
+    while (left.length) result.push(left.shift());
+    while (right.length) result.push(right.shift());
+
+    return result;
+}
 
 // From page 29 of Divide & Conquer lecture slides
 function QuickSort1 (p, q) {
@@ -121,14 +121,13 @@ function QuickSort3 (p, q) {
     count++;
     if (p < q) {
         if (q - p + 1 >= 16) {
-            swap(p, p + Random() % (q - p + 1), A);
+            A.swap(p, p + Random() % (q - p + 1));
         }
         let pivotposition = Partition (p, q);
         QuickSort3 (p, pivotposition - 1);
         QuickSort3 (pivotposition + 1, q);
     }
 }
-
 
 function Partition (first, last) {
     const pivot = A[first];
@@ -137,35 +136,13 @@ function Partition (first, last) {
     while (true) {
         while (tb <= last && A[tb] <= pivot) tb++;
         while (ts > first && A[ts] > pivot) ts--;
-        if (tb < ts) swap(tb, ts, A);
+        if (tb < ts) A.swap(tb, ts);
         else break;
     }
     A[first] = A[ts];
     A[ts] = pivot;
     return ts; // pivot position
 }
-
-// function Partition (AA) {
-//     const pivot = AA[0];
-//     let tb = 1;
-//     let ts = AA.length - 1;
-//     while (true) {
-//         while (tb < AA.length && AA[tb] < pivot) {
-//             tb++;
-//         }
-//         while (ts > 0 && AA[ts] > pivot) {
-//             ts--;
-//         }
-//         if (tb < ts) {
-//             swap(tb, ts, AA);
-//         } else {
-//             break;
-//         }
-//     }
-//     AA[0] = AA[ts];
-//     AA[ts] = pivot;
-//     return [ts, AA]; //pivot position
-// }
 
 /******************************************************************************/
 /*************************   END SORTING ALGORITHMS   *************************/
@@ -176,77 +153,68 @@ function Partition (first, last) {
 /******************************************************************************/
 
 let count = 0;
-let B;
 let A;
-out.setTable({
-    columnDefault: {width: 10},
-    columnCount: 5,
-    boldHeader: true,
-    columns: {
-        0: {patch: Chalk.yellow, width: 5, alignment: 'right'},
-        1: {patch: Chalk.cyan},
-        2: {patch: Chalk.red, alignment: 'right'},
-        3: {patch: Chalk.magenta, alignment: 'right'},
-        4: {patch: Chalk.green, width: 131}
-    }
-});
 
 // Main testing function
 (() => {
-
     let export_runs = RANDOM ? 'Random (count)\n' : 'Sorted (count)\n';
     let export_time = RANDOM ? 'Random (time)\n' : 'Sorted (time)\n';
 
+    let options = {
+        columnDefault: {width: 10},
+        columnCount: 5,
+        boldHeader: true,
+        border: Table.getBorderCharacters('norc'),
+        columns: {
+            0: {patch: Chalk.yellow, width: 4, alignment: 'left'},
+            1: {patch: Chalk.cyan},
+            2: {patch: Chalk.red, alignment: 'right'},
+            3: {patch: Chalk.magenta, alignment: 'right'},
+            4: {patch: Chalk.green, width: 131}
+        }
+    };
+    out.setTable(options);
     out.table(['n', 'Name', 'Time (ms)', 'Count', 'Array']);
-    for (let i = MIN_N; i <= MAX_N; i++) {
-        const n = Math.pow(2, i);
-        let array = makeArray(n);
 
-        let time = '';
+    for (let i = MIN_N; i <= MAX_N; i++) {
+        const n = pow(2, i);
+        const array = generateArrays(n);
+        let res;
+
+        print('');
+        out.setTable(options);
+
         // Original
         A = array[PRECISION - 1];
-        out.table([`2^${i}`, 'Original', 'N/A', 'N/A', StringifyArray(A, 4, 32)]);
+        out.table([`2^${i}`, 'Original', 'N/A', 'N/A', A.stringify(3, 131)]);
 
+        // Insertion
+        res = record_data(InsertionSort, array);
+        out.table(['', 'Insertion', res.time, res.count, A.stringify(3, 131)]);
+        export_runs += res.count + ', '; export_time += res.time + ', ';
 
-
-        // // Insertion
-        // B = array.slice();
-        // time = record_time(InsertionSort, 0, n - 1);
-        // row('', 'Insertion', time, count, A);
-        // export_runs += count;
-        // export_time += time;
-
-        // // Merge
-        // B = array.slice();
-        // time = record_time(MergeSort, A);
-        // row('', 'Merge', time, count, A);
-        // export_runs += ', ' + count;
-        // export_time += ', ' + time;
+        // Merge
+        res = record_data(MergeSort, array);
+        out.table(['',     'Merge', res.time, res.count, A.stringify(3, 131)]);
+        export_runs += res.count + ', '; export_time += res.time + ', ';
 
         // Quick1
-        B = array.slice();
-        time = record_time(QuickSort1, 0, n - 1);
-        out.table(['', 'Quick 1', time, count, StringifyArray(A, 4, 32)]);
-        export_runs += ', ' + count;
-        export_time += ', ' + time;
+        res = record_data(QuickSort1, array);
+        out.table(['',   'Quick 1', res.time, res.count, A.stringify(3, 131)]);
+        export_runs += res.count + ', '; export_time += res.time + ', ';
 
-        // // Quick2
-        // B = array;
-        // time = record_time(QuickSort2, 0, n - 1);
-        // row('', 'Quick 2', time, count, A);
-        // export_runs += ', ' + count;
-        // export_time += ', ' + time;
+        // Quick 2
+        res = record_data(QuickSort2, array);
+        out.table(['',   'Quick 2', res.time, res.count, A.stringify(3, 131)]);
+        export_runs += res.count + ', '; export_time += res.time + ', ';
 
-        // // Quick 3
-        // B = array;
-        // time = record_time(QuickSort3, 0, n - 1);
-        // row('', 'Quick 3', time, count, A);
-        // export_runs += ', ' + count + '\n';
-        // export_time += ', ' + time + '\n';
-
+        // Quick 3
+        res = record_data(QuickSort3, array);
+        out.table(['',   'Quick 3', res.time, res.count, A.stringify(3, 131)]);
+        export_runs += res.count + '\n'; export_time += res.time + '\n';
     }
-    console.log(export_runs + '\n' + export_time);
-})//();
+    print('\n' + export_runs + '\n' + export_time);
+})();
 
 // Make PRECISION arrays of size length, random or sequential
 function generateArrays (length) {
@@ -258,16 +226,18 @@ function generateArrays (length) {
     return array;
 }
 
-// Calculate the average time it takes to run f with parameters p1, p2
-function record_time (f, p1, p2) {
-    count = 0;
-    const start = milliseconds();
+function record_data (f, array) {
+    const B = array.clone();
+    const n = B[0].length - 1;
+    let counts = [];
+    const start = microseconds();
     for (let i = 0; i < PRECISION; i++) {
-        // A = f(B[i]);
+        count = 0;
         A = B[i];
-        f(0, A.length - 1);
+        f(0, n);
+        counts.push(count);
     }
-    const end = milliseconds();
-    count /= PRECISION;
-    return (end - start) / PRECISION;
+    const stop = microseconds();
+    const time = round((stop - start) / PRECISION, 3);
+    return {time: time, count: counts.median()};
 }
