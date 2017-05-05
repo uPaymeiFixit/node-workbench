@@ -12,11 +12,13 @@ const RANDOM = true; // Test with random values?
 /******************************************************************************/
 
 // From page 25 of Intro lecture slides
-function InsertionSort () {
-    for (let i = 0; i < A.length; i++) {
+function InsertionSort (p, q) {
+    for (let i = p; i <= q; i++) {
         let target = A[i];
         let j = i - 1;
-        while (++count && j >= 0 && target < A[j]) {
+        count++;
+        while (j >= 0 && target < A[j]) {
+            count++;
             A[j + 1] = A[j];
             j--;
         }
@@ -130,6 +132,7 @@ function QuickSort3 (p, q) {
 }
 
 function Partition (first, last) {
+// ####################################################################################################################################################################################################################################
     const pivot = A[first];
     let tb = first + 1;
     let ts = last;
@@ -161,7 +164,7 @@ let A;
     let export_time = RANDOM ? 'Random (time)\n' : 'Sorted (time)\n';
 
     let options = {
-        columnDefault: {width: 10},
+        columnDefault: {width: 12},
         columnCount: 5,
         boldHeader: true,
         border: Table.getBorderCharacters('norc'),
