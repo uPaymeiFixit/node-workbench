@@ -2,10 +2,10 @@ require('./utils.js');
 MODE = DEG;
 
 // Parameters
-const PRECISION = 100; // Number of times to run an algorithm to time it
-const MIN_N = 1; // Starting power 2^n
+const PRECISION = 1; // Number of times to run an algorithm to time it
+const MIN_N = 16; // Starting power 2^n
 const MAX_N = 16; // Stopping power 2^n
-const RANDOM = true; // Test with random values?
+const RANDOM = false; // Test with random values?
 
 /******************************************************************************/
 /************************   START SORTING ALGORITHMS   ************************/
@@ -132,7 +132,7 @@ function QuickSort3 (p, q) {
 }
 
 function Partition (first, last) {
-// ####################################################################################################################################################################################################################################
+// ##################################################################################################################################################################################################################################################################
     const pivot = A[first];
     let tb = first + 1;
     let ts = last;
