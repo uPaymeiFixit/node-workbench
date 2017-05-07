@@ -1,5 +1,9 @@
 #!/bin/bash
 
 cd "$(dirname "$0")";
-open . -a /Applications/Sublime\ Text.app/;
+if [ -z "$EDITOR" ]; then
+  $EDITOR .
+else
+  open . -a /Applications/Sublime\ Text.app/;
+fi
 gulp;
