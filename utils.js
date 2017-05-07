@@ -221,16 +221,21 @@ Array.prototype.median = function () {
 }
 
 Array.prototype.mean = function () {
-    let sum = 0;
-    for (const i of this) sum += i;
-    return sum / this.length;
+    return this.sum() / this.length;
 }
 
 // Removes any instance of val from the array
 Array.prototype.remove = function (val) {
-    for (let i; i != -1; i = this.indexOf(val)) {
+    let i = this.indexOf(val);
+    while (i != -1) {
         this.splice(i, 1);
+        i = this.indexOf(val);
     }
     return this;
 }
 
+Array.prototype.sum = function () {
+    let sum = 0;
+    for (const i of this) sum += i;
+    return sum;
+}
