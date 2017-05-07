@@ -225,3 +225,12 @@ Array.prototype.mean = function () {
     for (const i of this) sum += i;
     return sum / this.length;
 }
+
+// Removes any instance of val from the array
+Array.prototype.remove = function (val) {
+    for (let i; i != -1; i = this.indexOf(val)) {
+        this.splice(i, 1);
+    }
+    return this;
+}
+
