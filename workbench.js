@@ -47,6 +47,77 @@ const Cost = [
 /* 6*/ [OB, 21, 11, IN, 14, 33,  0]
 ];
 
-const o = Prim(Cost);
-out.red(o.MinCost);
-o.T.print();
+const p = Prim(Cost);
+out.red(p.MinCost);
+p.T.print();
+
+////////////////// DIJKSTRA /////////////////
+
+// Cost, n, v are input,
+// Dist, From are output
+function Dijkstra (Cost, v) {
+    const n = Cost.length - 1;
+    const s = [OB];
+    const Dist = [OB];
+    const From = [OB];
+
+    for (let i = 1; i <= n; i++) {
+        s[i] = 0;
+        Dist[i] = Cost[v][i];
+        From[i] = v;
+    }
+    s[v] = 1;
+    for (let num = 1; num < n; num++) {
+        //choose u s.t. s[u] = 0 and Dist[u] is minimum;
+        let min_u;
+        let min_dist = IN;
+        for (let u = 1; u <= n; u++) {
+            if (s[u] == 0 && Dist[u] < min_dist) {
+                min_u = u;
+                min_dist = Dist[u];
+            }
+        }
+        let u = min_u;
+        s[u] = 1;
+
+        // for each neighbor w of u with s[w] = 0 {
+        for (let w = 1; w <= n; w++) {
+            if (Cost[u][w] != IN && s[w] == 0) {
+
+                if (Dist[u] + Cost[u][w] < Dist[w]) {
+                    Dist[w] = Dist[u] + Cost[u][w];
+                    From[w] = u;
+                }
+
+            }
+        }
+    }
+
+    return {Dist: Dist, From: From};
+}
+
+function Find2 (x) {
+    let i = x;
+    while (A[i] != i) {
+        i = A[i];
+    }
+    return i;
+}
+
+// merge sets labeled a and b
+function Merge3 (a,b) {
+    if (height[a] == height[b]) {
+        A[b] = a;
+        height[a] = height[a]+1;
+    } else if (height[a] > height[b]) {
+        A[b] = a;
+    } else {
+        A[a] = b;
+    }
+}
+
+const d = Dijkstra(Cost, 1);
+d.Dist.shift(); // Remove leading out of bounds sentinel
+d.From.shift(); // Remove leading out of bounds sentinel
+d.Dist.print();
+d.From.print();
