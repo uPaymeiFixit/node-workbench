@@ -1,7 +1,17 @@
 require('./utils.js');
 MODE = DEG;
 
+// Parameters
+const PRECISION = 1; // Number of times to run an algorithm to time it
+const MIN_E_COEF = 0.2;
+const MAX_E_COEF = 0.2;
+const MIN_N = 10; // Starting power 2^n
+const MAX_N = 10; // Stopping power 2^n
 const IN = Number.MAX_SAFE_INTEGER; // Out of bounds & Infinity
+
+/******************************************************************************/
+/*************************   START GRAPH ALGORITHMS   *************************/
+/******************************************************************************/
 
 function Prim (Cost) {
     const n = Cost.length - 1;
@@ -23,6 +33,7 @@ function Prim (Cost) {
             }
         }
         let j = min_j;
+        if (j === undefined) continue;
 
         T.push(`(${j}, ${Near[j]})`); // add edge to the Minimum Spanning Tree
         MinCost += Cost[j][Near[j]];
@@ -38,7 +49,7 @@ function Prim (Cost) {
 
 // Cost, n, v are input,
 // Dist, From are output
-function Dijkstra (Cost, v) {
+function Dijkstra (Cost, v = 1) {
     const n = Cost.length - 1;
     const s = [IN];
     const Dist = [IN];
@@ -61,6 +72,8 @@ function Dijkstra (Cost, v) {
             }
         }
         let u = min_u;
+        if (u === undefined) continue;
+
         s[u] = 1;
 
         // for each neighbor w of u with s[w] = 0 {
@@ -97,24 +110,22 @@ function Merge3 (a,b) {
     }
 }
 
-
-
-
-function createGraph (n, max_weight = 99, percent_empty = 0.2) {
+function generateGraph (n, e, max_weight = 99) {
     let G = [];
     for (let i = 1; i <= n; i++) {
         G[i] = [];
-        G[i][i] = 0;
-    }
-    for (let i = 1; i <= n; i++) {
-        for (let j = i + 1; j <= n; j++) {
-            if (Math.random() < percent_empty) {
-                G[i][j] = IN;
-            } else {
-                G[i][j] = Math.ceil(Math.random() * max_weight);
-            }
-            G[j][i] = G[i][j];
+        for (let j = 1; j <= n; j++) {
+            G[i][j] = i == j ? 0 : IN;
         }
+    }
+    for (let k = 0; k < e; k++) {
+        let i;
+        let j;
+        do {
+            i = Math.ceil(Math.random() * n);
+            j = Math.ceil(Math.random() * n);
+        } while (G[i][j] != IN)
+        G[i][j] = G[j][i] = Math.ceil(Math.random() * max_weight);
     }
     return G;
 }
@@ -132,20 +143,82 @@ function printGraph (G) {
     out.cyan(Chalk.yellow(head) + print);
 }
 
+/******************************************************************************/
+/**************************   END GRAPH ALGORITHMS   **************************/
+/******************************************************************************/
+
+/******************************************************************************/
+/***************************   START TESTING TOOLS   **************************/
+/******************************************************************************/
+
+// Main testing function
+(() => {
+    let export_time = '\nTime (ms), ';
+
+    let options = {
+        columnDefault: {width: 12},
+        columnCount: 5,
+        boldHeader: true,
+        border: Table.getBorderCharacters('norc'),
+        columns: {
+            0: {patch: Chalk.yellow, width: 3, alignment: 'left'},
+            1: {patch: Chalk.cyan, width: 4},
+            2: {patch: Chalk.red, alignment: 'right'},
+            3: {patch: Chalk.magenta, alignment: 'right'},
+            4: {patch: Chalk.green, width: 131}
+        }
+    };
+
+    for (let E_COEF = MIN_E_COEF; E_COEF <= MAX_E_COEF; E_COEF += 0.2) {
+        E_COEF = round(E_COEF, 1);
+        print('');
+        out.setTable(options);
+        out.table(['n', 'e', 'Algorithm', 'Time (ms)', 'result']);
+        for (let n = MIN_N; n <= MAX_N; n += 10) {
+            const e = E_COEF * n * (n - 1) / 2;
+            const Costs = generateGraphs(n, e);
+            let time;
 
 
-const Cost = createGraph(40);
-out.white('Graph:');
-printGraph(Cost);
+            printGraph(Costs[0]);
+            print('');
 
-const p = Prim(Cost);
-out.green(`\n\tPrim's solution: ${p.T.stringify()}`);
-out.green(`Prim's cost: ${p.MinCost}`);
+            const p = Prim(Costs[0]);
+            out.green(`\n\tPrim's solution: ${p.T.stringify()}`);
+            out.green(`Prim's cost: ${p.MinCost}`);
 
-const d = Dijkstra(Cost, 1);
-d.Dist.shift(); // Remove leading out of bounds sentinel
-d.From.shift(); // Remove leading out of bounds sentinel
-out.magenta(`Dijkstra's dist[]: ${d.Dist.stringify()}`);
-out.magenta(`Dijkstra's from[]: ${d.From.stringify()}`);
+            const d = Dijkstra(Costs[0], 1);
+            d.Dist.shift(); // Remove leading out of bounds sentinel
+            d.From.shift(); // Remove leading out of bounds sentinel
+            out.magenta(`Dijkstra's dist[]: ${d.Dist.stringify()}`);
+            out.magenta(`Dijkstra's from[]: ${d.From.stringify()}`);
 
 
+            // time = record_data(Prim, Costs);
+            // out.table([n, E_COEF + 'E', `Prim's`, time, '']);
+            // export_time += time + ', ';
+
+            // time = record_data(Dijkstra, Costs);
+            // out.table([n, E_COEF + 'E', `Dijkstra's`, time, '']);
+            // export_time += time + ', ';
+        }
+    }
+    print(export_time);
+})();
+
+function generateGraphs (n, e) {
+    let array = [];
+    while (array.length < PRECISION) {
+        array.push(generateGraph(n, e));
+    }
+    return array;
+}
+
+function record_data (f, array) {
+    const start = microseconds();
+    for (let i = 0; i < PRECISION; i++) {
+        f(array[i]);
+    }
+    const stop = microseconds();
+    return round((stop - start) / PRECISION, 3);
+}
