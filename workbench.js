@@ -1,14 +1,14 @@
 require('./utils.js');
 MODE = DEG;
 
-const OB = IN = 9999; // Out of bounds & Infinity
+const IN = Number.MAX_SAFE_INTEGER; // Out of bounds & Infinity
 
 function Prim (Cost) {
     const n = Cost.length - 1;
     const T = [];
 
     let MinCost = 0;
-    const Near = [OB, 0];
+    const Near = [, 0];
     for (let i = 2; i <= n; i++) {
         Near[i] = 1;
     }
@@ -36,30 +36,13 @@ function Prim (Cost) {
     return {MinCost: MinCost, T: T};
 }
 
-const Cost = [
-/*      OB   1   2   3   4   5   6 */
-/*OB*/ [OB, OB, OB, OB, OB, OB, OB],
-/* 1*/ [OB,  0, 16, IN, IN, 19, 21],
-/* 2*/ [OB, 16,  0,  5,  6, IN, 11],
-/* 3*/ [OB, IN,  5,  0, 10, IN, IN],
-/* 4*/ [OB, IN,  6, 10,  0, 18, 14],
-/* 5*/ [OB, 19, IN, IN, 18,  0, 33],
-/* 6*/ [OB, 21, 11, IN, 14, 33,  0]
-];
-
-const p = Prim(Cost);
-out.red(p.MinCost);
-p.T.print();
-
-////////////////// DIJKSTRA /////////////////
-
 // Cost, n, v are input,
 // Dist, From are output
 function Dijkstra (Cost, v) {
     const n = Cost.length - 1;
-    const s = [OB];
-    const Dist = [OB];
-    const From = [OB];
+    const s = [IN];
+    const Dist = [IN];
+    const From = [IN];
 
     for (let i = 1; i <= n; i++) {
         s[i] = 0;
@@ -83,12 +66,10 @@ function Dijkstra (Cost, v) {
         // for each neighbor w of u with s[w] = 0 {
         for (let w = 1; w <= n; w++) {
             if (Cost[u][w] != IN && s[w] == 0) {
-
                 if (Dist[u] + Cost[u][w] < Dist[w]) {
                     Dist[w] = Dist[u] + Cost[u][w];
                     From[w] = u;
                 }
-
             }
         }
     }
@@ -116,8 +97,55 @@ function Merge3 (a,b) {
     }
 }
 
+
+
+
+function createGraph (n, max_weight = 99, percent_empty = 0.2) {
+    let G = [];
+    for (let i = 1; i <= n; i++) {
+        G[i] = [];
+        G[i][i] = 0;
+    }
+    for (let i = 1; i <= n; i++) {
+        for (let j = i + 1; j <= n; j++) {
+            if (Math.random() < percent_empty) {
+                G[i][j] = IN;
+            } else {
+                G[i][j] = Math.ceil(Math.random() * max_weight);
+            }
+            G[j][i] = G[i][j];
+        }
+    }
+    return G;
+}
+
+function printGraph (G) {
+    let head = '  ';
+    let print = '';
+    for (let i = 1; i < G.length; i++) {
+        head += leftPad(i, 3);
+        print += '\n\t' + Chalk.yellow(leftPad(i,2));
+        for (let j = 1; j < G[i].length; j++) {
+            print += G[i][j] == IN ? '   ' : leftPad(G[i][j], 3);
+        }
+    }
+    out.cyan(Chalk.yellow(head) + print);
+}
+
+
+
+const Cost = createGraph(40);
+out.white('Graph:');
+printGraph(Cost);
+
+const p = Prim(Cost);
+out.green(`\n\tPrim's solution: ${p.T.stringify()}`);
+out.green(`Prim's cost: ${p.MinCost}`);
+
 const d = Dijkstra(Cost, 1);
 d.Dist.shift(); // Remove leading out of bounds sentinel
 d.From.shift(); // Remove leading out of bounds sentinel
-d.Dist.print();
-d.From.print();
+out.magenta(`Dijkstra's dist[]: ${d.Dist.stringify()}`);
+out.magenta(`Dijkstra's from[]: ${d.From.stringify()}`);
+
+
