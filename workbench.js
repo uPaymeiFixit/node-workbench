@@ -2,11 +2,13 @@ require('./utils.js');
 MODE = DEG;
 
 // Parameters
+const ALGORITHM = Prim;
+const PRINT = true;
 const PRECISION = 1; // Number of times to run an algorithm to time it
 const MIN_E_COEF = 0.2;
-const MAX_E_COEF = 0.2;
+const MAX_E_COEF = 1;
 const MIN_N = 10; // Starting power 2^n
-const MAX_N = 10; // Stopping power 2^n
+const MAX_N = 1000; // Stopping power 2^n
 const IN = Number.MAX_SAFE_INTEGER; // Out of bounds & Infinity
 
 /******************************************************************************/
@@ -49,7 +51,7 @@ function Prim (Cost) {
 
 // Cost, n, v are input,
 // Dist, From are output
-function Dijkstra (Cost, v = 1) {
+function Kruskal (Cost, v = 1) {
     const n = Cost.length - 1;
     const s = [IN];
     const Dist = [IN];
@@ -110,6 +112,8 @@ function Merge3 (a,b) {
     }
 }
 
+// Generate random undirected graph of size n and and edges e
+// (may be connected or unconnected)
 function generateGraph (n, e, max_weight = 99) {
     let G = [];
     for (let i = 1; i <= n; i++) {
@@ -135,12 +139,18 @@ function printGraph (G) {
     let print = '';
     for (let i = 1; i < G.length; i++) {
         head += leftPad(i, 3);
-        print += '\n\t' + Chalk.yellow(leftPad(i,2));
+        print += '\n\t' + Chalk.bgBlue(Chalk.bold(Chalk.white(leftPad(i,2))));
         for (let j = 1; j < G[i].length; j++) {
-            print += G[i][j] == IN ? '   ' : leftPad(G[i][j], 3);
+            if (G[i][j] == IN) {
+                print += '   ';
+            } else if (i == j) {
+                print += Chalk.red(leftPad(G[i][j], 3));
+            } else {
+                print += leftPad(G[i][j], 3);
+            }
         }
     }
-    out.cyan(Chalk.yellow(head) + print);
+    out.default(Chalk.bgBlue(Chalk.bold(head)) + Chalk.cyan(print));
 }
 
 /******************************************************************************/
@@ -153,63 +163,48 @@ function printGraph (G) {
 
 // Main testing function
 (() => {
-    let export_time = '\nTime (ms), ';
+    console.log(`n, 0.2E, 0.4E, 0.6E, 0.8E, E`);
 
-    let options = {
-        columnDefault: {width: 12},
-        columnCount: 5,
-        boldHeader: true,
-        border: Table.getBorderCharacters('norc'),
-        columns: {
-            0: {patch: Chalk.yellow, width: 3, alignment: 'left'},
-            1: {patch: Chalk.cyan, width: 4},
-            2: {patch: Chalk.red, alignment: 'right'},
-            3: {patch: Chalk.magenta, alignment: 'right'},
-            4: {patch: Chalk.green, width: 131}
-        }
-    };
+    let dn = 10;
+    for (let n = MIN_N; n <= MAX_N; n += dn) {
+        if (n == 100) dn = 100;
 
-    for (let E_COEF = MIN_E_COEF; E_COEF <= MAX_E_COEF; E_COEF += 0.2) {
-        E_COEF = round(E_COEF, 1);
-        print('');
-        out.setTable(options);
-        out.table(['n', 'e', 'Algorithm', 'Time (ms)', 'result']);
-        for (let n = MIN_N; n <= MAX_N; n += 10) {
+        let csv = n;
+
+        for (let E_COEF = MIN_E_COEF; E_COEF <= MAX_E_COEF; E_COEF += 0.2) {
+            E_COEF = Math.round(10 * E_COEF) / 10;
             const e = E_COEF * n * (n - 1) / 2;
+
             const Costs = generateGraphs(n, e);
-            let time;
 
+            csv += ', ' + record_data(ALGORITHM, Costs);
 
-            printGraph(Costs[0]);
-            print('');
+            // Show results for n = 10
+            if (n == 10 && PRINT) {
+                out.bgBlue(Chalk.white(Chalk.bold(`    Graph (n = ${n}, e = ${E_COEF}E)    `)));
+                printGraph(Costs[0]);
 
-            const p = Prim(Costs[0]);
-            out.green(`\n\tPrim's solution: ${p.T.stringify()}`);
-            out.green(`Prim's cost: ${p.MinCost}`);
+                const p = Prim(Costs[0]);
+                out.green(`\n\tMST: ${p.T.stringify()}`);
+                out.green(`Cost: ${p.MinCost}`);
 
-            const d = Dijkstra(Costs[0], 1);
-            d.Dist.shift(); // Remove leading out of bounds sentinel
-            d.From.shift(); // Remove leading out of bounds sentinel
-            out.magenta(`Dijkstra's dist[]: ${d.Dist.stringify()}`);
-            out.magenta(`Dijkstra's from[]: ${d.From.stringify()}`);
-
-
-            // time = record_data(Prim, Costs);
-            // out.table([n, E_COEF + 'E', `Prim's`, time, '']);
-            // export_time += time + ', ';
-
-            // time = record_data(Dijkstra, Costs);
-            // out.table([n, E_COEF + 'E', `Dijkstra's`, time, '']);
-            // export_time += time + ', ';
+                // const d = Kruskal(Costs[0], 1);
+                // d.Dist.shift(); // Remove leading out of bounds sentinel
+                // d.From.shift(); // Remove leading out of bounds sentinel
+                // out.magenta(`Kruskal's dist[]: ${d.Dist.stringify()}`);
+                // out.magenta(`Kruskal's from[]: ${d.From.stringify()}`);
+                print('\n');
+            }
         }
+
+        console.log(csv);
     }
-    print(export_time);
 })();
 
 function generateGraphs (n, e) {
     let array = [];
     while (array.length < PRECISION) {
-        array.push(generateGraph(n, e));
+        array.push(generateGraph(n, e, 9));
     }
     return array;
 }
